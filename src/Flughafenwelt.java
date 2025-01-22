@@ -52,14 +52,16 @@ class Flugzeug implements Runnable {
                 startGate.release();
                 return;
             }
-            startLande.acquire();
-            startGate.release();
             luft.acquire();
+            startLande.acquire();
+            // Fahren zur Landebahn
+            startGate.release();
             startLande.release();
             Thread.sleep(flugdauer * 100L);
-            zielLande.acquire();
-            luft.release();
             zielGate.acquire();
+            zielLande.acquire();
+            // Landne
+            luft.release();
             zielLande.release();
             int left_till_wait_deboarding = passenger_per_time;
             for(int i = passagiere_im_flugzeug; i > 0; i--){
