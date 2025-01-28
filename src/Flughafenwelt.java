@@ -34,7 +34,9 @@ class Flugzeug implements Runnable {
         try {
             Thread.sleep(bereitstellungsDauer);
             int passagiere_im_flugzeug = 0;
+            zielGate.acquire();
             startGate.acquire();
+            // Flugzeug spawnt am Gate
             int left_till_wait_boarding = passenger_per_time;
             for(int i = kapzität; i > 0; i--){
                 // Boarding
@@ -50,18 +52,20 @@ class Flugzeug implements Runnable {
             }
             if(passagiere_im_flugzeug == 0){
                 startGate.release();
+                zielGate.acquire();
                 return;
             }
             luft.acquire();
             startLande.acquire();
             // Fahren zur Landebahn
+            // Losfliegen
             startGate.release();
             startLande.release();
-            Thread.sleep(flugdauer * 100L);
-            zielGate.acquire();
+            Thread.sleep(flugdauer * 100L); // Flugdauer
             zielLande.acquire();
-            // Landne
+            // Landen
             luft.release();
+            // Fahren zum Gate (was ja schon reserviert ist)
             zielLande.release();
             int left_till_wait_deboarding = passenger_per_time;
             for(int i = passagiere_im_flugzeug; i > 0; i--){
